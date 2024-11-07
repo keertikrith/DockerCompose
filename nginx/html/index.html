@@ -1,434 +1,421 @@
-
 <!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
+<!-- Coding By CodingNepal - youtube.com/codingnepal -->
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">  
+    <title>Typing Speed Test Game | CodingNepal</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <!-- Embedded CSS -->
     <style>
-        /* {
-    border: 1px solid #888;
-}*/
+      /* Import Google Font - Poppins */
+      @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
-        @import url('https://fonts.googleapis.com/css?family=Roboto');
+      /* CSS Variables for Consistent Styling */
+      :root {
+        --primary-color: #1E90FF;
+        --secondary-color: #f0f4f8;
+        --accent-color: #FF6B6B;
+        --text-color: #333;
+        --correct-color: #4CAF50;
+        --incorrect-color: #FF5722;
+        --active-color: #1E90FF;
+        --background-color: #f7f9fc;
+        --border-color: #dfe3e8;
+        --shadow-color: rgba(0, 0, 0, 0.1);
+      }
 
-        :root {
-            --green: #9ff1a5;
-            --red: #ff9292;
-            --dim: 62px;
+      *{
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Poppins', sans-serif;
+      }
+
+      body{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        background: var(--background-color);
+        padding: 20px;
+      }
+
+      ::selection{
+        color: #fff;
+        background: var(--primary-color);
+      }
+
+      .wrapper{
+        width: 100%;
+        max-width: 800px;
+        padding: 40px;
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 15px 25px var(--shadow-color);
+        position: relative;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .wrapper:hover{
+        transform: translateY(-5px);
+        box-shadow: 0 25px 35px var(--shadow-color);
+      }
+
+      .wrapper .input-field{
+        opacity: 0;
+        z-index: -999;
+        position: absolute;
+      }
+
+      .wrapper .content-box{
+        padding: 25px 30px 20px;
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+        background: var(--secondary-color);
+      }
+
+      .content-box .typing-text{
+        overflow: hidden;
+        max-height: 300px;
+        margin-bottom: 25px;
+        position: relative;
+      }
+
+      .typing-text::-webkit-scrollbar{
+        width: 0;
+      }
+
+      .typing-text p{
+        font-size: 22px;
+        text-align: justify;
+        letter-spacing: 1px;
+        word-break: break-word;
+        line-height: 1.8;
+        color: var(--text-color);
+      }
+
+      .typing-text p span{
+        position: relative;
+        transition: background 0.3s ease, color 0.3s ease;
+      }
+
+      .typing-text p span.correct{
+        color: var(--correct-color);
+      }
+
+      .typing-text p span.incorrect{
+        color: var(--incorrect-color);
+        background: rgba(255, 87, 34, 0.1);
+        border-radius: 4px;
+        padding: 2px 4px;
+      }
+
+      .typing-text p span.active{
+        color: var(--active-color);
+      }
+
+      .typing-text p span.active::before{
+        position: absolute;
+        content: "";
+        height: 3px;
+        width: 100%;
+        bottom: -2px;
+        left: 0;
+        opacity: 0;
+        border-radius: 5px;
+        background: var(--active-color);
+        animation: blink 1s ease-in-out infinite;
+      }
+
+      @keyframes blink{
+        50%{ 
+          opacity: 1; 
+        }
+      }
+
+      .content-box .content{
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        border-top: 1px solid var(--border-color);
+        padding-top: 20px;
+      }
+
+      .content button{
+        outline: none;
+        border: none;
+        width: 120px;
+        color: #fff;
+        padding: 10px 0;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 30px;
+        background: var(--primary-color);
+        transition: transform 0.3s ease, background 0.3s ease;
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .content button:hover{
+        background: #1C86EE;
+      }
+
+      .content button:active{
+        transform: scale(0.98);
+        background: #187bcd;
+      }
+
+      .content .result-details{
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        width: 100%;
+        justify-content: space-around;
+        margin-bottom: 15px;
+      }
+
+      .result-details li{
+        display: flex;
+        align-items: center;
+        list-style: none;
+        margin: 10px 20px;
+      }
+
+      .result-details li p{
+        font-size: 18px;
+        margin-right: 8px;
+        color: var(--text-color);
+      }
+
+      .result-details li span{
+        display: block;
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--text-color);
+      }
+
+      li span b{
+        font-weight: 600;
+      }
+
+      @media (max-width: 768px) {
+        .wrapper{
+          padding: 30px;
         }
 
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            background-color: #f8f994;
+        .content-box .typing-text{
+          max-height: 200px;
         }
 
-        h1,
-        h2 {
-            font-family: 'Roboto', sans-serif;
-            font-weight: bold;
-            color: #333;
-            margin: 10px;
+        .typing-text p{
+          font-size: 20px;
         }
 
-        h1 {
-            font-size: 60px;
+        .result-details li{
+          margin: 8px 15px;
         }
 
-        h2 {
-            font-size: 37px;
+        .content button{
+          width: 100%;
+          font-size: 16px;
+          padding: 10px 0;
+          margin-top: 10px;
+          border-radius: 25px;
         }
 
-        p {
-            font-family: 'Roboto', sans-serif;
-            font-size: 23px;
-            font-weight: 100;
-            color: #333;
-            margin: 10px;
+        .content .result-details{
+          justify-content: space-between;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .wrapper{
+          padding: 20px;
         }
 
-        .bold {
-            font-weight: 900;
+        .content-box .typing-text{
+          max-height: 180px;
         }
 
-        .center {
-            position: relative;
-            top: 20%;
-            margin: 0;
+        .typing-text p{
+          font-size: 18px;
         }
 
-        .center1 {
-            position: relative;
-            margin: 30px;
+        .result-details li{
+          margin: 6px 10px;
         }
 
-        .container {
-            height: 100%;
-            position: relative;
+        .content button{
+          width: 100%;
+          font-size: 14px;
+          padding: 8px 0;
+          margin-top: 15px;
+          border-radius: 20px;
         }
-
-        .game {
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: 0;
-            bottom: 0;
-            margin: auto;
-            width: 540px;
-            height: 650px;
-            border-radius: 9px;
-            background-color: #333;
-            padding: 5px;
-
-        }
-
-        .box {
-            height: 100px;
-            width: 100px;
-            float: left;
-            margin: 0;
-            padding: 0px;
-            text-align: center;
-            border-radius: 9px;
-            border: 4px solid #333;
-            background-color: #f1c97c;
-
-            background-position: center;
-            background-size: 70%;
-            background-repeat: no-repeat;
-
-        }
-
-        .green {
-            background-color: var(--green);
-            animation-name: getIn;
-            animation-duration: .3s;
-            animation-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-
-        .tree {
-            background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pg0KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPg0KPHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJDYXBhXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB2aWV3Qm94PSIwIDAgNDM1LjYzNyA0MzUuNjM3IiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCA0MzUuNjM3IDQzNS42Mzc7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxyZWN0IHg9IjIwMS44NzQiIHk9IjM1NC4wMzciIHN0eWxlPSJmaWxsOiNFREFFNzg7IiB3aWR0aD0iMzQuNCIgaGVpZ2h0PSI3NC40Ii8+DQo8cmVjdCB4PSIyMDEuODc0IiB5PSIzNTQuMDM3IiBzdHlsZT0iZmlsbDojRjlDMDk1OyIgd2lkdGg9IjEyLjgiIGhlaWdodD0iNzQuNCIvPg0KPHJlY3QgeD0iMjIxLjg3NCIgeT0iMzU0LjAzNyIgc3R5bGU9ImZpbGw6I0Q2OTM2NTsiIHdpZHRoPSIxMy42IiBoZWlnaHQ9Ijc0LjQiLz4NCjxwb2x5Z29uIHN0eWxlPSJmaWxsOiMyNEJBNzM7IiBwb2ludHM9IjcwLjY3NCwzNTQuMDM3IDEzMy4wNzQsMjc2LjQzNyA4OC4yNzQsMjc2LjQzNyAxNTguNjc0LDE3OS42MzcgMTEzLjg3NCwxNzkuNjM3IA0KCTE3OS40NzQsOTkuNjM3IDEzOS40NzQsOTkuNjM3IDIxOC42NzQsNy42MzcgMjk3Ljg3NCw5OS42MzcgMjU3Ljg3NCw5OS42MzcgMzIzLjQ3NCwxNzkuNjM3IDI3OC42NzQsMTc5LjYzNyAzNDkuMDc0LDI3Ni40MzcgDQoJMzA0LjI3NCwyNzYuNDM3IDM2Ni42NzQsMzU0LjAzNyAiLz4NCjxnPg0KCTxwb2x5Z29uIHN0eWxlPSJmaWxsOiMxQ0EzNUY7IiBwb2ludHM9Ijg4LjI3NCwyNzYuNDM3IDg4LjI3NCwyNzYuNDM3IDkzLjA3NCwyNzYuNDM3IDkzLjA3NCwyNzYuNDM3IAkiLz4NCgk8cG9seWdvbiBzdHlsZT0iZmlsbDojMUNBMzVGOyIgcG9pbnRzPSIyNTcuODc0LDk5LjYzNyAyMTcuODc0LDk5LjYzNyAyODMuNDc0LDE3OS42MzcgMzIzLjQ3NCwxNzkuNjM3IDI1Ny44NzQsOTkuNjM3IA0KCQkyOTcuODc0LDk5LjYzNyAyMTguNjc0LDcuNjM3IDE5OC42NzQsMzAuODM3IAkiLz4NCgk8cG9seWdvbiBzdHlsZT0iZmlsbDojMUNBMzVGOyIgcG9pbnRzPSIzMDQuMjc0LDI3Ni40MzcgMjY0LjI3NCwyNzYuNDM3IDMyNi42NzQsMzU0LjAzNyAzNjYuNjc0LDM1NC4wMzcgCSIvPg0KCTxwb2x5Z29uIHN0eWxlPSJmaWxsOiMxQ0EzNUY7IiBwb2ludHM9IjIzOC42NzQsMTc5LjYzNyAzMDkuMDc0LDI3Ni40MzcgMzQ5LjA3NCwyNzYuNDM3IDI3OC42NzQsMTc5LjYzNyAJIi8+DQo8L2c+DQo8Zz4NCgk8cG9seWdvbiBzdHlsZT0iZmlsbDojMzZDRTgyOyIgcG9pbnRzPSIyMzMuMDc0LDI0LjQzNyAyMTguNjc0LDcuNjM3IDEzOS40NzQsOTkuNjM3IDE2Ny40NzQsOTkuNjM3IAkiLz4NCgk8cG9seWdvbiBzdHlsZT0iZmlsbDojMzZDRTgyOyIgcG9pbnRzPSIxMzMuMDc0LDI3Ni40MzcgNzAuNjc0LDM1NC4wMzcgOTguNjc0LDM1NC4wMzcgMTYxLjA3NCwyNzYuNDM3IAkiLz4NCgk8cG9seWdvbiBzdHlsZT0iZmlsbDojMzZDRTgyOyIgcG9pbnRzPSIxMTYuMjc0LDI3Ni40MzcgMTg2LjY3NCwxNzkuNjM3IDE0MS44NzQsMTc5LjYzNyAyMDcuNDc0LDk5LjYzNyAxNzkuNDc0LDk5LjYzNyANCgkJMTEzLjg3NCwxNzkuNjM3IDE1OC42NzQsMTc5LjYzNyA4OC4yNzQsMjc2LjQzNyAJIi8+DQo8L2c+DQo8cGF0aCBzdHlsZT0iZmlsbDojM0EyNzFFOyIgZD0iTTMyMS4wNzQsMjg0LjQzN2gyOGM0LjgsMCw4LTMuMiw4LThjMC0yLjQtMC44LTQtMi40LTUuNmwtNjAtODIuNGgyOC44YzQuOCwwLDgtMy4yLDgtOA0KCWMwLTIuNC0wLjgtNC44LTIuNC02LjRsLTU0LjQtNjYuNGgyMy4yYzQuOCwwLDgtMy4yLDgtOGMwLTIuNC0wLjgtNC44LTMuMi02LjRsLTc3LjYtOTAuNGMtMy4yLTMuMi04LTQtMTEuMi0wLjhsLTAuOCwwLjgNCglsLTc5LjIsOTEuMmMtMy4yLDMuMi0yLjQsOC44LDAuOCwxMS4yYzEuNiwxLjYsMy4yLDEuNiw1LjYsMS42aDIyLjRsLTU0LjQsNjcuMmMtMi40LDMuMi0yLjQsOC44LDAuOCwxMS4yYzEuNiwwLjgsMy4yLDEuNiw0LjgsMS42DQoJaDI4LjhsLTYxLjYsODRjLTIuNCwzLjItMS42LDguOCwxLjYsMTEuMmMxLjYsMC44LDMuMiwxLjYsNC44LDEuNmgyOGwtNTIsNjQuOGMtMi40LDMuMi0yLjQsOC44LDAuOCwxMS4yYzEuNiwwLjgsMy4yLDEuNiw0LjgsMS42DQoJaDEyMy4ydjY2LjRjMCw0LjgsMy4yLDgsOCw4aDM0LjRjNC44LDAsOC0zLjIsOC04di02NS42aDEyMy4yYzQuOCwwLDgtMy4yLDgtOGMwLTEuNi0wLjgtNC0xLjYtNC44TDMyMS4wNzQsMjg0LjQzN3oNCgkgTTIyNy40NzQsNDIwLjQzN2gtMTguNHYtNTguNGgxOC40VjQyMC40Mzd6IE0yMzUuNDc0LDM0Ni4wMzdoLTE0OGw1Mi02NC44YzIuNC0zLjIsMi40LTguOC0wLjgtMTEuMmMtMS42LTAuOC0zLjItMS42LTQuOC0xLjYNCgloLTI4LjhsNjAuOC04NGMyLjQtMy4yLDEuNi04LjgtMS42LTExLjJjLTEuNi0wLjgtMy4yLTEuNi00LjgtMS42aC0yOC44bDU0LjQtNjcuMmMyLjQtMy4yLDIuNC04LjgtMC44LTExLjINCgljLTEuNi0wLjgtMy4yLTEuNi00LjgtMS42aC0yMS42bDYwLjgtNzEuMmw2MS42LDcxLjJoLTIyLjRjLTQuOCwwLTgsMy4yLTgsOGMwLDEuNiwwLjgsNCwxLjYsNC44bDU0LjQsNjcuMmgtMjhjLTQuOCwwLTgsMy4yLTgsOA0KCWMwLDEuNiwwLjgsMy4yLDEuNiw0LjhsNjAuOCw4NGgtMjkuNmMtNC44LDAtOCwzLjItOCw4YzAsMS42LDAuOCw0LDEuNiw0LjhsNTIsNjQuOEgyMzUuNDc0eiIvPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPC9zdmc+DQo=');
-        }
-
-        .red {
-            background-color: var(--red);
-            animation-name: getIn1;
-            animation-duration: .3s;
-            animation-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-
-        .factory {
-            background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pg0KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPg0KPHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJDYXBhXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB2aWV3Qm94PSIwIDAgNTEyLjAwMSA1MTIuMDAxIiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCA1MTIuMDAxIDUxMi4wMDE7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwYXRoIHN0eWxlPSJmaWxsOiNFM0UzRTM7IiBkPSJNMzc5LjAwMSwzMzguODc2di04MC4xMmwtMTIzLDgwdi04MGwtMTE2LjUsNzUuNjhsLTkuNTYtMTE4LjU2aC05Ni42MWwtMC4yNi0wLjAybC0xOS44NCwyNDYuMDENCgljMC4wOTcsMC4wMSwwLjEsMC4wMSwwLjEsMC4wMWwtMC4xLTAuMDFsLTMuMjMsNDAuMDFoMTQzaDM0OXYtMjQzTDM3OS4wMDEsMzM4Ljg3NnogTTE0OS42NzEsNDYxLjg3NkwxNDkuNjcxLDQ2MS44NzZsMC4xLTAuMDENCglMMTQ5LjY3MSw0NjEuODc2eiIvPg0KPGc+DQoJPHJlY3QgeD0iMzk5LjAwMSIgeT0iMzc4Ljg3MSIgc3R5bGU9ImZpbGw6IzREQkJFQjsiIHdpZHRoPSI2MyIgaGVpZ2h0PSI0MCIvPg0KCTxyZWN0IHg9IjI5Ni4wMDEiIHk9IjM3OC44NzEiIHN0eWxlPSJmaWxsOiM0REJCRUI7IiB3aWR0aD0iNjMiIGhlaWdodD0iNDAiLz4NCgk8cmVjdCB4PSIxOTYuMDAxIiB5PSIzNzguODcxIiBzdHlsZT0iZmlsbDojNERCQkVCOyIgd2lkdGg9IjYwIiBoZWlnaHQ9IjQwIi8+DQo8L2c+DQo8Zz4NCgk8cGF0aCBzdHlsZT0iZmlsbDojRkQ2MjQ0OyIgZD0iTTE0OS43NzEsNDYxLjg2NmwzLjIzLDQwLjAxaC0xNDNsMy4yMy00MC4wMWMwLjE1MiwwLjAxNSwxMzYuMjg3LDAuMDEsMTM2LjQ0LDAuMDFMMTQ5Ljc3MSw0NjEuODY2DQoJCXoiLz4NCgk8cG9seWdvbiBzdHlsZT0iZmlsbDojRkQ2MjQ0OyIgcG9pbnRzPSIxMjYuNDcxLDE3Mi44NjYgMTI5Ljk0MSwyMTUuODc2IDMzLjMzMSwyMTUuODc2IDMzLjA3MSwyMTUuODU2IDM2LjUzMSwxNzIuODY2IA0KCQkzNi42NzEsMTcyLjg3NiAxMjYuMzMxLDE3Mi44NzYgCSIvPg0KPC9nPg0KPHBvbHlnb24gc3R5bGU9ImZpbGw6I0UzRTNFMzsiIHBvaW50cz0iMTIzLjAwMSwxMjkuODc2IDEyNi40NzEsMTcyLjg2NiAxMjYuMzMxLDE3Mi44NzYgMzYuNjcxLDE3Mi44NzYgMzYuNTMxLDE3Mi44NjYgDQoJNDAuMDAxLDEyOS44NzYgIi8+DQo8cGF0aCBkPSJNMTk2LjAwMSw0NTEuODc2Yy01LjUyLDAtMTAsNC40OC0xMCwxMHM0LjQ4LDEwLDEwLDEwczEwLTQuNDgsMTAtMTBTMjAxLjUyMSw0NTEuODc2LDE5Ni4wMDEsNDUxLjg3NnoiLz4NCjxwYXRoIGQ9Ik01MDYuNzcsMjUwLjA4NmMtMy4yMjYtMS43NDktNy4xNDctMS41OTItMTAuMjIxLDAuNDA3bC0xMDcuNTQ4LDY5Ljk1di02MS42ODdjMC0zLjY2Ny0yLjAwOC03LjA0MS01LjIzMS04Ljc5DQoJYy0zLjIyNS0xLjc0OC03LjE0Ni0xLjU5Mi0xMC4yMjEsMC40MDdsLTEwNy41NDgsNjkuOTV2LTYxLjU2N2MwLTMuNjY2LTIuMDA3LTcuMDM5LTUuMjI5LTguNzg5DQoJYy0zLjIyMi0xLjc0OS03LjE0NC0xLjU5Ni0xMC4yMTgsMC40MDNsLTEwMi40MzYsNjYuNTQ0Yy0wLjU3OC03LjE3Mi0xNS4wMDktMTg2LjEwOC0xNS4xNDktMTg3Ljg0Mw0KCWMtMC40MTktNS4xOTQtNC43NTctOS4xOTUtOS45NjgtOS4xOTVoLTgzYy01LjIxMSwwLTkuNTQ5LDQuMDAxLTkuOTY4LDkuMTk1bC0zMCwzNzJjLTAuMjI1LDIuNzgzLDAuNzI1LDUuNTMzLDIuNjE4LDcuNTg1DQoJczQuNTU4LDMuMjE5LDcuMzUsMy4yMTljNi40NzksMCw0NjEuMTQ4LDAsNDkyLDBjNS41MjIsMCwxMC00LjQ3NywxMC0xMHYtMjQzQzUxMi4wMDEsMjU1LjIwOSw1MDkuOTkzLDI1MS44MzUsNTA2Ljc3LDI1MC4wODZ6DQoJIE0xMTkuMDk4LDIwNS44NzZINDMuOTA1bDEuODU1LTIzaDcxLjQ4NEwxMTkuMDk4LDIwNS44NzZ6IE00Mi4yOTIsMjI1Ljg3Nmg3OC40MTljMC42OTEsOC41NjMsMTcuMjUxLDIxMy45MjIsMTguMjI1LDIyNkgyNC4wNjcNCglMNDIuMjkyLDIyNS44NzZ6IE0xMTMuNzc2LDEzOS44NzZsMS44NTUsMjNINDcuMzcybDEuODU1LTIzSDExMy43NzZ6IE0yMC44NDEsNDkxLjg3NmwxLjYxMy0yMGgxMTguMDk1bDEuNjEzLDIwSDIwLjg0MXoNCgkgTTQ5Mi4wMDEsNDkxLjg3NkgxNjIuMjI3bC0xMi4yODItMTUyLjNsOTYuMDU2LTYyLjM5OXY2MS41NzljMCwzLjY2NywyLjAwOCw3LjA0MSw1LjIzMSw4Ljc5DQoJYzMuMjI2LDEuNzQ5LDcuMTQ3LDEuNTkzLDEwLjIyMS0wLjQwN2wxMDcuNTQ4LTY5Ljk1djYxLjY4N2MwLDMuNjY3LDIuMDA4LDcuMDQxLDUuMjMxLDguNzljMy4yMjMsMS43NDcsNy4xNDYsMS41OTMsMTAuMjIxLTAuNDA3DQoJbDEwNy41NDgtNjkuOTVWNDkxLjg3NnoiLz4NCjxwYXRoIGQ9Ik0xOTYuMDAxLDQyOC44NzZoNjBjNS41MjIsMCwxMC00LjQ3NywxMC0xMHYtNDBjMC01LjUyMy00LjQ3OC0xMC0xMC0xMGgtNjBjLTUuNTIyLDAtMTAsNC40NzctMTAsMTB2NDANCglDMTg2LjAwMSw0MjQuMzk5LDE5MC40NzksNDI4Ljg3NiwxOTYuMDAxLDQyOC44NzZ6IE0yMDYuMDAxLDM4OC44NzZoNDB2MjBoLTQwVjM4OC44NzZ6Ii8+DQo8cGF0aCBkPSJNMjk2LjAwMSw0MjguODc2aDYzYzUuNTIyLDAsMTAtNC40NzcsMTAtMTB2LTQwYzAtNS41MjMtNC40NzgtMTAtMTAtMTBoLTYzYy01LjUyMiwwLTEwLDQuNDc3LTEwLDEwdjQwDQoJQzI4Ni4wMDEsNDI0LjM5OSwyOTAuNDc5LDQyOC44NzYsMjk2LjAwMSw0MjguODc2eiBNMzA2LjAwMSwzODguODc2aDQzdjIwaC00M1YzODguODc2eiIvPg0KPHBhdGggZD0iTTM5OS4wMDEsNDI4Ljg3Nmg2M2M1LjUyMiwwLDEwLTQuNDc3LDEwLTEwdi00MGMwLTUuNTIzLTQuNDc4LTEwLTEwLTEwaC02M2MtNS41MjIsMC0xMCw0LjQ3Ny0xMCwxMHY0MA0KCUMzODkuMDAxLDQyNC4zOTksMzkzLjQ3OSw0MjguODc2LDM5OS4wMDEsNDI4Ljg3NnogTTQwOS4wMDEsMzg4Ljg3Nmg0M3YyMGgtNDNWMzg4Ljg3NnoiLz4NCjxwYXRoIGQ9Ik01NC4wMDEsNzkuODc2YzUuNTIyLDAsMTAtNC40NzcsMTAtMTBjMC0xNi41NDIsMTMuNDU4LTMwLDMwLTMwaDEyMmM4LjAzMiwwLDE1Ljg3Mi0zLjI3MSwyMS41MDktOC45NzUNCgljNS41NjgtNS42MzUsOC41ODMtMTMuMDU1LDguNDktMjAuODk0Yy0wLjA2NC01LjQ4Mi00LjUyOC05Ljg4MS05Ljk5Ny05Ljg4MWMtMC4wMzksMC0wLjA4LDAtMC4xMiwwDQoJYy01LjUyMiwwLjA2Ni05Ljk0Niw0LjU5Ni05Ljg4MSwxMC4xMThjMC4wMjksMi40NTItMC45MzcsNC43OTUtMi43MTksNi41OThjLTEuOTA0LDEuOTI4LTQuNTU5LDMuMDMzLTcuMjgyLDMuMDMzaC0xMjINCgljLTI3LjU3LDAtNTAsMjIuNDMtNTAsNTBDNDQuMDAxLDc1LjM5OSw0OC40NzksNzkuODc2LDU0LjAwMSw3OS44NzZ6Ii8+DQo8cGF0aCBkPSJNMjM1Ljk5LDU5Ljc1NmwtMTExLjk4OSwwLjEyYy0xNi41NDIsMC0zMCwxMy40NTgtMzAsMzBjMCw1LjUyMyw0LjQ3OCwxMCwxMCwxMHMxMC00LjQ3NywxMC0xMGMwLTUuNTE0LDQuNDg2LTEwLDEwLjAxMS0xMA0KCWwxMTEuOTg5LTAuMTJjMTYuNTQyLDAsMzAtMTMuMjQzLDMwLTI5LjUydi0wLjIzYzAtNS41MjMtNC40NzgtMTAtMTAtMTBzLTEwLDQuNDc3LTEwLDEwdjAuMjMNCglDMjQ2LjAwMSw1NS40ODUsMjQxLjUxNSw1OS43NTYsMjM1Ljk5LDU5Ljc1NnoiLz4NCjxwYXRoIGQ9Ik00NjIuMDAxLDQ1MS44NzZoLTIyNmMtNS41MjIsMC0xMCw0LjQ3Ny0xMCwxMHM0LjQ3OCwxMCwxMCwxMGgyMjZjNS41MjIsMCwxMC00LjQ3NywxMC0xMFM0NjcuNTI0LDQ1MS44NzYsNDYyLjAwMSw0NTEuODc2DQoJeiIvPg0KPHBhdGggZD0iTTcwLjAwMSwyODguODc2aDIzYzUuNTIyLDAsMTAtNC40NzcsMTAtMTBzLTQuNDc4LTEwLTEwLTEwaC0yM2MtNS41MjIsMC0xMCw0LjQ3Ny0xMCwxMFM2NC40NzksMjg4Ljg3Niw3MC4wMDEsMjg4Ljg3NnoiLz4NCjxwYXRoIGQ9Ik03MC4wMDEsMzI4Ljg3NmgyM2M1LjUyMiwwLDEwLTQuNDc3LDEwLTEwcy00LjQ3OC0xMC0xMC0xMGgtMjNjLTUuNTIyLDAtMTAsNC40NzctMTAsMTBTNjQuNDc5LDMyOC44NzYsNzAuMDAxLDMyOC44NzZ6Ii8+DQo8cGF0aCBkPSJNNzAuMDAxLDM2OC44NzZoMjNjNS41MjIsMCwxMC00LjQ3NywxMC0xMHMtNC40NzgtMTAtMTAtMTBoLTIzYy01LjUyMiwwLTEwLDQuNDc3LTEwLDEwUzY0LjQ3OSwzNjguODc2LDcwLjAwMSwzNjguODc2eiIvPg0KPHBhdGggZD0iTTkzLjAwMSwzODguODc2aC0yM2MtNS41MjIsMC0xMCw0LjQ3Ny0xMCwxMHM0LjQ3OCwxMCwxMCwxMGgyM2M1LjUyMiwwLDEwLTQuNDc3LDEwLTEwUzk4LjUyNCwzODguODc2LDkzLjAwMSwzODguODc2eiIvPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPC9zdmc+DQo=');
-        }
-
-        .won,
-        .init {
-            z-index: 999;
-            position: fixed;
-            left: 0;
-            right: 0;
-            margin: auto;
-            text-align: center;
-            border: 8px solid #333;
-            border-radius: 7px;
-        }
-
-        .won {
-            background-color: var(--green);
-            top: 100%;
-            width: 600px;
-            height: 300px;
-        }
-
-        .init {
-            background-color: var(--red);
-            top: 30%;
-            width: 600px;
-            height: 300px;
-        }
-
-        .floating {
-            position: relative;
-            animation-name: floating;
-            animation-iteration-count: infinite;
-            animation-duration: 1.5s;
-            animation-timing-function: ease-in-out;
-            cursor: pointer;
-            text-decoration: underline;
-            text-decoration-color: #333;
-            margin-top: 30px;
-        }
-
-        .levelUp {
-            animation: levelUp 2.5s ease-in-out;
-            animation-delay: 2s;
-        }
-
-        .hidden {
-            visibility: hidden;
-        }
-
-        @keyframes won {
-            from {
-                top: 100%;
-                transform: rotate(180deg);
-            }
-
-            to {
-                top: 30%;
-                transform: rotate(0deg);
-            }
-        }
-
-        @keyframes start {
-            from {
-                top: 30%;
-                transform: rotate(0deg);
-            }
-
-            to {
-                top: 100%;
-                transform: rotate(180deg);
-            }
-        }
-
-        @keyframes floating {
-            0% {
-                top: 0px;
-                transform: rotate(0deg);
-            }
-
-            25% {
-                top: 5px;
-                transform: rotate(3deg);
-            }
-
-            50% {
-                top: -5px;
-                transform: rotate(-3deg);
-            }
-
-            100% {
-                top: 0px;
-                transform: rotate(0deg);
-            }
-        }
-
-        @keyframes getIn {
-            from {
-                background-size: 0%;
-            }
-
-            to {
-                background-size: 70%;
-            }
-        }
-
-        @keyframes getIn1 {
-            from {
-                background-size: 0%;
-            }
-
-            to {
-                background-size: 70%;
-            }
-        }
-
-        @keyframes levelUp {
-            0% {
-                opacity: 0;
-                visibility: visible;
-            }
-
-            50% {
-                opacity: 1;
-            }
-
-            100% {
-                opacity: 0;
-                visibility: hidden;
-            }
-        }
-
-        @media (max-width: 500px) {
-            h1 {
-                font-size: 37px;
-            }
-
-            .game {
-                width: 331px;
-                height: 396px;
-            }
-
-            .box {
-                width: var(--dim);
-                height: var(--dim);
-                border: 2.1px solid #333;
-            }
-
-            .won,
-            .init {
-                width: 300px;
-                height: 400px;
-            }
-
-            .init {
-                top: 10%;
-            }
-        }
+      }
     </style>
-</head>
+  </head>
+  <body>
+    <div class="wrapper">
+      <input type="text" class="input-field" autocomplete="off" spellcheck="false">
+      <div class="content-box">
+        <div class="typing-text">
+          <p></p>
+        </div>
+        <div class="content">
+          <ul class="result-details">
+            <li class="time">
+              <p>Time Left:</p>
+              <span><b>60</b>s</span>
+            </li>
+            <li class="mistake">
+              <p>Mistakes:</p>
+              <span>0</span>
+            </li>
+            <li class="wpm">
+              <p>WPM:</p>
+              <span>0</span>
+            </li>
+            <li class="cpm">
+              <p>CPM:</p>
+              <span>0</span>
+            </li>
+          </ul>
+          <button>Try Again</button>
+        </div>
+      </div>
+    </div>
 
-<body>
-    <div class="init">
-        <div class="center1">
-            <h1>WE NEED YOU!</h1>
-            <p>Click on each square to plant a tree. You must hurry or the factories will colonize us!</p>
-            <p class="floating bold">START GAME</p>
-        </div>
-    </div>
-    <div class="won">
-        <div class="center">
-            <h1>YOU WON!</h1>
-            <p class="floating replay bold">save the World again</p>
-        </div>
-    </div>
-    <div class="init hidden">
-        <h1 class="center">INCREASED VELOCITY!</h1>
-    </div>
-    <!-- <h2 class="counter">Level: 1</h2> -->
-    <div class="container">
-        <div class="game"></div>
-    </div>
+    <!-- Embedded JavaScript -->
     <script>
-        const game = document.querySelector('.game');
-        var arrFactory = [];
-        var arrTree = [];
-        var newFactory;
-        var interval = 800;
-        //var counter = 1;
+      // Paragraphs Array
+      const paragraphs = [
+          "Authors often misinterpret the lettuce as a folklore rabbi, when in actuality it feels more like an uncursed bacon. Pursued distances show us how mother-in-laws can be charleses. Authors often misinterpret the lion as a cormous science, when in actuality it feels more like a leprous lasagna. Recent controversy aside, their band was, in this moment, a racemed suit. The clutch of a joke becomes a togaed chair. The first pickled chess is.",
+          "In modern times the first scrawny kitten is, in its own way, an input. An ostrich is the beginner of a roast. An appressed exhaust is a gun of the mind. A recorder is a grade from the right perspective. A hygienic is the cowbell of a skin. Few can name a dun brazil that isn't a highbrow playroom. The unwished beast comes from a thorny oxygen. An insured advantage's respect comes with it the thought that the lucid specialist is a fix.",
+          "In ancient times the legs could be said to resemble stroppy vegetables. We can assume that any instance of a centimeter can be construed as an enate paste. One cannot separate pairs from astute managers. Those americas are nothing more than fish. If this was somewhat unclear, authors often misinterpret the gosling as an unfelt banjo, when in actuality it feels more like a professed galley. A bow of the squirrel is assumed.",
+          "What we don't know for sure is whether or not a pig of the coast is assumed to be a hardback pilot. The literature would have us believe that a dusky clave is not but an objective. Few can name a limbate leo that isn't a sunlit silver. The bow is a mitten. However, the drawer is a bay. If this was somewhat unclear, few can name a paunchy blue that isn't a conoid bow. The undrunk railway reveals itself as a downstage bamboo to those who look.",
+          "Their politician was, in this moment, a notour paperback. The first armless grouse is, in its own way, a gear. The coat is a wash. However, a cake is the llama of a caravan. Snakelike armies show us how playgrounds can be viscoses. Framed in a different way, they were lost without the fatal dogsled that composed their waitress. Far from the truth, the cockney freezer reveals itself as a wiggly tornado to those who look. The first hawklike sack.",
+          "An aunt is a bassoon from the right perspective. As far as we can estimate, some posit the melic myanmar to be less than kutcha. One cannot separate foods from blowzy bows. The scampish closet reveals itself as a sclerous llama to those who look. A hip is the skirt of a peak. Some hempy laundries are thought of simply as orchids. A gum is a trumpet from the right perspective. A freebie flight is a wrench of the mind. Some posit the croupy.",
+          "A baby is a shingle from the right perspective. Before defenses, collars were only operations. Bails are gleesome relatives. An alloy is a streetcar's debt. A fighter of the scarecrow is assumed to be a leisured laundry. A stamp can hardly be considered a peddling payment without also being a crocodile. A skill is a meteorology's fan. Their scent was, in this moment, a hidden feeling. The competitor of a bacon becomes a boxlike cougar.",
+          "A broadband jam is a network of the mind. One cannot separate chickens from glowing periods. A production is a faucet from the right perspective. The lines could be said to resemble zincoid females. A deborah is a tractor's whale. Cod are elite japans. Some posit the wiglike norwegian to be less than plashy. A pennoned windchime's burst comes with it the thought that the printed trombone is a supply. Relations are restless tests.",
+          "In recent years, some teeming herons are thought of simply as numbers. Nowhere is it disputed that an unlaid fur is a marble of the mind. Far from the truth, few can name a glossy lier that isn't an ingrate bone. The chicken is a giraffe. They were lost without the abscessed leek that composed their fowl. An interviewer is a tussal bomb. Vanward maracas show us how scarfs can be doubts. Few can name an unguled punch that isn't pig.",
+          "A cough is a talk from the right perspective. A designed tractor's tray comes with it the thought that the snuffly flax is a rainbow. Their health was, in this moment, a earthy passbook. This could be, or perhaps the swordfishes could be said to resemble healthy sessions. A capricorn is a helium from the right perspective. However, a sled is a mailman's tennis. The competitor of an alarm becomes a toeless raincoat. Their twist was, in this moment.",
+          "Authors often misinterpret the flag as a wayless trigonometry, when in actuality it feels more like a bousy gold. Few can name a jasp oven that isn't a stutter grape. They were lost without the huffy religion that composed their booklet. Those waves are nothing more than pedestrians. Few can name a quartered semicolon that isn't a rounding scooter. Though we assume the latter, the literature would have us believe.",
+          "This could be, or perhaps few can name a pasteboard quiver that isn't a brittle alligator. A swordfish is a death's numeric. Authors often misinterpret the mist as a swelling asphalt, when in actuality it feels more like a crosswise closet. Some posit the tonal brother-in-law to be less than newborn. We know that the sizes could be said to resemble sleepwalk cycles. Before seasons, supplies were only fighters. Their stew was, in this moment.",
+          "The vision of an attempt becomes a lawny output. Dibbles are mis womens. The olden penalty reveals itself as a bustled field to those who look. Few can name a chalky force that isn't a primate literature. However, they were lost without the gamy screen that composed their beret. Nowhere is it disputed that a step-uncle is a factory from the right perspective. One cannot separate paints from dreary windows. What we don't know for sure is whether.",
+          "A tramp is a siamese from the right perspective. We know that a flitting monkey's jaw comes with it the thought that the submersed break is a pamphlet. Their cream was, in this moment, a seedy daffodil. The nest is a visitor. Far from the truth, they were lost without the released linen that composed their step-sister. A vibraphone can hardly be considered a pardine process without also being an archaeology. The bay of a hyacinth becomes.",
+          "The frosts could be said to resemble backstage chards. One cannot separate colleges from pinkish bacons. Far from the truth, the mom of a rooster becomes a chordal hydrogen. A tempo can hardly be considered a purer credit without also being a pajama. The first combined ease is, in its own way, a pantyhose. Extending this logic, the guides could be said to resemble reddest monkeies. Framed in a different way, an addle hemp is a van.",
+          "Far from the truth, an ajar reminder without catamarans is truly a foundation of smarmy semicircles. An alike board without harps is truly a satin of fated pans. A hubcap sees a parent as a painful beautician. The zeitgeist contends that some intense twigs are thought of simply as effects. A cross is a poppied tune. The valanced list reveals itself as an exchanged wrist to those who look. Recent controversy aside.",
+          "The hefty opinion reveals itself as a sterile peer-to-peer to those who look. This could be, or perhaps the watch of a diamond becomes a bosom baboon. In recent years, some posit the unstuffed road to be less than altern. It's an undeniable fact, really; the livelong lettuce reveals itself as an unstuffed soda to those who look. In ancient times a bit is a balance's season. The popcorn of a morning becomes a moonless beauty.",
+          "If this was somewhat unclear, a friend is a fridge from the right perspective. An upset carriage is a stitch of the mind. To be more specific, a temper is a pair from the right perspective. Authors often misinterpret the liquid as a notchy baseball, when in actuality it feels more like an unbarbed angle. Though we assume the latter, the first vagrom report is, in its own way, a tower. We know that the octopus of a cd becomes an unrent dahlia.",
+          "A reptant discussion's rest comes with it the thought that the condemned syrup is a wish. The drake of a wallaby becomes a sonant harp. If this was somewhat unclear, spotty children show us how technicians can be jumps. Their honey was, in this moment, an intime direction. A ship is the lion of a hate. They were lost without the croupous jeep that composed their lily. In modern times a butcher of the birth is assumed to be a spiral bean.",
+          "Those cowbells are nothing more than elements. This could be, or perhaps before stockings, thoughts were only opinions. A coil of the exclamation is assumed to be a hurtless toy. A board is the cast of a religion. In ancient times the first stinko sailboat is, in its own way, an exchange. Few can name a tutti channel that isn't a footless operation. Extending this logic, an oatmeal is the rooster of a shake. Those step-sons are nothing more than matches."
+      ];
 
-        function createGame() {
-            for (let i = 0; i < 30; i++) {
-                let a = document.querySelector('.game');
-                let b = document.createElement('div');
-                b.classList.add('box');
-                b.setAttribute('data-value', i);
-                a.appendChild(b);
-            }
-
-        }
-
-        function replay() {
-            var replay = document.querySelector('.replay');
-            replay.addEventListener('click', function () {
-                box.forEach(function (box) {
-                    box.classList.remove('green');
-                    box.classList.remove('tree');
-
-                });
-                //counter += 1;
-                //document.querySelector('.counter').innerHTML = 'Level: ' + counter;
-                document.querySelector('.hidden').classList.add('levelUp')
-                let bang = document.querySelector('.won');
-                newFactory = setInterval(randomFactory, 600);
-                bang.style.animation = 'start .6s ease-in-out';
-                bang.style.top = '100%';
-            });
-        }
-
-        function addTree(e) {
-            let c = e.target;
-
-            if (arrTree.indexOf(c.dataset.value) == -1) {
-                arrTree.push(c.dataset.value);
-                if (arrTree.length == 30) {
-                    clearInterval(newFactory);
-
-                    document.querySelector('.hidden').classList.remove('levelUp');
-                    let bang = document.querySelector('.won');
-                    bang.style.animation = 'won .6s ease-in-out';
-                    bang.style.top = '30%';
-                    replay();
-                }
-            }
-
-
-            if (arrFactory.indexOf(c.dataset.value) != -1) {
-                arrFactory.splice(arrFactory.indexOf(c.dataset.value), 1);
-            }
-            c.classList.remove('red');
-            c.classList.remove('factory');
-            c.classList.add('green');
-            c.classList.add('tree');
-            console.log(arrTree);
-        }
-
-        function randomFactory() {
-            let e = Math.random() * 30;
-            let g = Math.floor(e);
-
-            if (arrFactory.indexOf(box[g].dataset.value) == -1) {
-                arrFactory.push(box[g].dataset.value);
-                box[g].classList.add('red');
-                box[g].classList.remove('green');
-                box[g].classList.add('factory');
-                if (arrFactory.length == 30) {
-                    clearInterval(newFactory);
-                }
-            }
-
-            if (arrTree.indexOf(box[g].dataset.value) != -1) {
-                arrTree.splice(arrTree.indexOf(box[g].dataset.value), 1);
-            }
-            console.log(arrFactory);
-        }
-
-        var yol = document.querySelector('.yolo');
-
-        createGame();
-
-        var box = document.querySelectorAll('.box');
-        // console.log(box);
-        var start = document.querySelector('.floating');
-        start.addEventListener('click', function () {
-            let init = document.querySelector('.init');
-            init.style.animation = 'start .5s ease-in';
-            init.style.top = '100%';
-            newFactory = setInterval(randomFactory, interval);
-        });
-
-        box.forEach(function (box) {
-            box.addEventListener('click', addTree, false);
-        }, false);
-
-        function fire(e) {
-            console.log(e.target);
-            let trg = e.target;
-
-            const itemDim = this.getBoundingClientRect(),
-                itemSize = {
-                    x: itemDim.right - itemDim.left,
-                    y: itemDim.bottom - itemDim.top,
-                };
-
-            let burst = new mojs.Burst({
-                left: itemDim.left + (itemSize.x / 2),
-                top: itemDim.top + (itemSize.y / 1.7),
-                count: 9,
-                radius: { 50: 90 },
-            });
-            burst.play();
-        };
-
-
-        box.forEach(function (box) {
-            box.addEventListener('click', fire);
-        });
+      // Selecting DOM Elements
+      const typingText = document.querySelector(".typing-text p"),
+            inpField = document.querySelector(".wrapper .input-field"),
+            tryAgainBtn = document.querySelector(".content button"),
+            timeTag = document.querySelector(".time span b"),
+            mistakeTag = document.querySelector(".mistake span"),
+            wpmTag = document.querySelector(".wpm span"),
+            cpmTag = document.querySelector(".cpm span");
+      
+      let timer,
+          maxTime = 60,
+          timeLeft = maxTime,
+          charIndex = 0,
+          mistakes = 0,
+          isTyping = false;
+      
+      // Function to Load a Random Paragraph
+      function loadParagraph() {
+          const ranIndex = Math.floor(Math.random() * paragraphs.length);
+          typingText.innerHTML = "";
+          paragraphs[ranIndex].split("").forEach(char => {
+              let span = `<span>${char}</span>`;
+              typingText.innerHTML += span;
+          });
+          typingText.querySelectorAll("span")[0].classList.add("active");
+          document.addEventListener("keydown", () => inpField.focus());
+          typingText.addEventListener("click", () => inpField.focus());
+      }
+      
+      // Function to Initialize Typing
+      function initTyping() {
+          const characters = typingText.querySelectorAll("span");
+          const typedChar = inpField.value.split("")[charIndex];
+          if(charIndex < characters.length - 1 && timeLeft > 0) {
+              if(!isTyping) {
+                  timer = setInterval(initTimer, 1000);
+                  isTyping = true;
+              }
+              if(typedChar == null) {
+                  if(charIndex > 0) {
+                      charIndex--;
+                      if(characters[charIndex].classList.contains("incorrect")) {
+                          mistakes--;
+                      }
+                      characters[charIndex].classList.remove("correct", "incorrect");
+                  }
+              } else {
+                  if(characters[charIndex].innerText === typedChar) {
+                      characters[charIndex].classList.add("correct");
+                  } else {
+                      mistakes++;
+                      characters[charIndex].classList.add("incorrect");
+                  }
+                  charIndex++;
+              }
+              characters.forEach(span => span.classList.remove("active"));
+              if(charIndex < characters.length) {
+                  characters[charIndex].classList.add("active");
+              }
+      
+              // Calculate WPM
+              let wpm = Math.round(((charIndex - mistakes)  / 5) / (maxTime - timeLeft) * 60);
+              wpm = wpm < 0 || !wpm || wpm === Infinity ? 0 : wpm;
+              
+              // Update DOM
+              wpmTag.innerText = wpm;
+              mistakeTag.innerText = mistakes;
+              cpmTag.innerText = charIndex - mistakes;
+          } else {
+              clearInterval(timer);
+              inpField.value = "";
+          }   
+      }
+      
+      // Function to Initialize Timer
+      function initTimer() {
+          if(timeLeft > 0) {
+              timeLeft--;
+              timeTag.innerText = timeLeft;
+              let wpm = Math.round(((charIndex - mistakes)  / 5) / (maxTime - timeLeft) * 60);
+              wpm = wpm < 0 || !wpm || wpm === Infinity ? 0 : wpm;
+              wpmTag.innerText = wpm;
+          } else {
+              clearInterval(timer);
+          }
+      }
+      
+      // Function to Reset the Game
+      function resetGame() {
+          loadParagraph();
+          clearInterval(timer);
+          timeLeft = maxTime;
+          charIndex = mistakes = isTyping = 0;
+          inpField.value = "";
+          timeTag.innerText = timeLeft;
+          wpmTag.innerText = 0;
+          mistakeTag.innerText = 0;
+          cpmTag.innerText = 0;
+      }
+      
+      // Initialize the Game
+      loadParagraph();
+      inpField.addEventListener("input", initTyping);
+      tryAgainBtn.addEventListener("click", resetGame);
     </script>
-</body>
-
+  </body>
 </html>
