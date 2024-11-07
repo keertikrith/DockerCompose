@@ -2,11 +2,197 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Catch the Stars</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: linear-gradient(to bottom, #1e3c72, #2a5298);
+            font-family: Arial, sans-serif;
+            user-select: none;
+        }
+        #gameArea {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        #basket {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 50px;
+            background: #8B4513;
+            border-radius: 10px;
+        }
+        .star {
+            position: absolute;
+            top: 0;
+            width: 30px;
+            height: 30px;
+            background: gold;
+            clip-path: polygon(
+                50% 0%, 
+                61% 35%, 
+                98% 35%, 
+                68% 57%, 
+                79% 91%, 
+                50% 70%, 
+                21% 91%, 
+                32% 57%, 
+                2% 35%, 
+                39% 35%
+            );
+            animation: fall linear;
+        }
+        @keyframes fall {
+            from { top: -30px; }
+            to { top: 100%; }
+        }
+        #scoreBoard {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 24px;
+            text-shadow: 2px 2px 4px #000;
+        }
+        #gameOver {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: red;
+            font-size: 48px;
+            display: none;
+            text-shadow: 2px 2px 4px #000;
+        }
+        #restartBtn {
+            position: absolute;
+            top: 60%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            font-size: 20px;
+            background: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none;
+        }
+        #restartBtn:hover {
+            background: #f0f0f0;
+        }
+    </style>
 </head>
 <body>
-    <h1>Hello Docker Container</h1>
-    
+    <div id="gameArea">
+        <div id="scoreBoard">Score: 0</div>
+        <div id="basket"></div>
+        <div id="gameOver">Game Over</div>
+        <button id="restartBtn">Restart</button>
+    </div>
+
+    <script>
+        const gameArea = document.getElementById('gameArea');
+        const basket = document.getElementById('basket');
+        const scoreBoard = document.getElementById('scoreBoard');
+        const gameOverText = document.getElementById('gameOver');
+        const restartBtn = document.getElementById('restartBtn');
+
+        let score = 0;
+        let stars = [];
+        let gameInterval;
+        let spawnInterval;
+        let animationDuration = 3000; // in ms
+
+        // Move basket with mouse
+        gameArea.addEventListener('mousemove', (e) => {
+            const gameAreaRect = gameArea.getBoundingClientRect();
+            let basketX = e.clientX - gameAreaRect.left - (basket.offsetWidth / 2);
+            // Boundary conditions
+            if (basketX < 0) basketX = 0;
+            if (basketX + basket.offsetWidth > gameAreaRect.width) {
+                basketX = gameAreaRect.width - basket.offsetWidth;
+            }
+            basket.style.left = basketX + 'px';
+        });
+
+        // Create a star
+        function createStar() {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            const gameAreaRect = gameArea.getBoundingClientRect();
+            const starSize = 30;
+            const xPos = Math.random() * (gameAreaRect.width - starSize);
+            star.style.left = xPos + 'px';
+            star.style.animationDuration = animationDuration + 'ms';
+            gameArea.appendChild(star);
+            stars.push(star);
+
+            // Listen for animation end
+            star.addEventListener('animationend', () => {
+                if (gameArea.contains(star)) {
+                    endGame();
+                }
+            });
+
+            // Collision detection
+            const fallInterval = setInterval(() => {
+                if (!gameArea.contains(star)) {
+                    clearInterval(fallInterval);
+                    return;
+                }
+                const starRect = star.getBoundingClientRect();
+                const basketRect = basket.getBoundingClientRect();
+                if (starRect.bottom >= basketRect.top &&
+                    starRect.left >= basketRect.left &&
+                    starRect.right <= basketRect.right) {
+                    // Caught the star
+                    score++;
+                    scoreBoard.textContent = 'Score: ' + score;
+                    star.remove();
+                    clearInterval(fallInterval);
+                }
+            }, 100);
+        }
+
+        // Start the game
+        function startGame() {
+            score = 0;
+            scoreBoard.textContent = 'Score: 0';
+            gameOverText.style.display = 'none';
+            restartBtn.style.display = 'none';
+            // Spawn stars every 1 second
+            spawnInterval = setInterval(createStar, 1000);
+        }
+
+        // End the game
+        function endGame() {
+            clearInterval(spawnInterval);
+            stars.forEach(star => star.remove());
+            stars = [];
+            gameOverText.style.display = 'block';
+            restartBtn.style.display = 'block';
+        }
+
+        // Restart the game
+        restartBtn.addEventListener('click', () => {
+            startGame();
+        });
+
+        // Initialize the game
+        window.onload = () => {
+            startGame();
+        };
+    </script>
 </body>
 </html>
