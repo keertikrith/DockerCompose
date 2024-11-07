@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Catch the Stars</title>
+    <title>Space Defender</title>
     <style>
         * {
             box-sizing: border-box;
@@ -13,55 +13,20 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background: linear-gradient(to bottom, #1e3c72, #2a5298);
+            background: #000; /* Black background for space */
             font-family: Arial, sans-serif;
-            user-select: none;
+            color: white;
         }
-        #gameArea {
-            position: relative;
-            width: 100%;
-            height: 100%;
-        }
-        #basket {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100px;
-            height: 50px;
-            background: #8B4513;
-            border-radius: 10px;
-        }
-        .star {
-            position: absolute;
-            top: 0;
-            width: 30px;
-            height: 30px;
-            background: gold;
-            clip-path: polygon(
-                50% 0%, 
-                61% 35%, 
-                98% 35%, 
-                68% 57%, 
-                79% 91%, 
-                50% 70%, 
-                21% 91%, 
-                32% 57%, 
-                2% 35%, 
-                39% 35%
-            );
-            animation: fall linear;
-        }
-        @keyframes fall {
-            from { top: -30px; }
-            to { top: 100%; }
+        #gameCanvas {
+            display: block;
+            background: url('https://i.imgur.com/8I8FZ1E.jpg') repeat; /* Starry background */
+            background-size: cover;
         }
         #scoreBoard {
             position: absolute;
-            top: 20px;
+            top: 10px;
             left: 50%;
             transform: translateX(-50%);
-            color: white;
             font-size: 24px;
             text-shadow: 2px 2px 4px #000;
         }
@@ -70,129 +35,276 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            color: red;
             font-size: 48px;
             display: none;
-            text-shadow: 2px 2px 4px #000;
+            text-align: center;
+            text-shadow: 2px 2px 8px #ff0000;
         }
         #restartBtn {
-            position: absolute;
-            top: 60%;
-            left: 50%;
-            transform: translateX(-50%);
+            margin-top: 20px;
             padding: 10px 20px;
-            font-size: 20px;
-            background: #ffffff;
+            font-size: 24px;
+            background: #ff0000;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             display: none;
+            color: #fff;
+            box-shadow: 2px 2px 4px #000;
         }
         #restartBtn:hover {
-            background: #f0f0f0;
+            background: #cc0000;
         }
     </style>
 </head>
 <body>
-    <div id="gameArea">
-        <div id="scoreBoard">Score: 0</div>
-        <div id="basket"></div>
-        <div id="gameOver">Game Over</div>
+    <canvas id="gameCanvas"></canvas>
+    <div id="scoreBoard">Score: 0</div>
+    <div id="gameOver">
+        <div>GAME OVER</div>
         <button id="restartBtn">Restart</button>
     </div>
 
     <script>
-        const gameArea = document.getElementById('gameArea');
-        const basket = document.getElementById('basket');
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
         const scoreBoard = document.getElementById('scoreBoard');
-        const gameOverText = document.getElementById('gameOver');
+        const gameOverScreen = document.getElementById('gameOver');
         const restartBtn = document.getElementById('restartBtn');
 
-        let score = 0;
-        let stars = [];
-        let gameInterval;
-        let spawnInterval;
-        let animationDuration = 3000; // in ms
+        // Set canvas dimensions
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
-        // Move basket with mouse
-        gameArea.addEventListener('mousemove', (e) => {
-            const gameAreaRect = gameArea.getBoundingClientRect();
-            let basketX = e.clientX - gameAreaRect.left - (basket.offsetWidth / 2);
-            // Boundary conditions
-            if (basketX < 0) basketX = 0;
-            if (basketX + basket.offsetWidth > gameAreaRect.width) {
-                basketX = gameAreaRect.width - basket.offsetWidth;
-            }
-            basket.style.left = basketX + 'px';
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
         });
 
-        // Create a star
-        function createStar() {
-            const star = document.createElement('div');
-            star.classList.add('star');
-            const gameAreaRect = gameArea.getBoundingClientRect();
-            const starSize = 30;
-            const xPos = Math.random() * (gameAreaRect.width - starSize);
-            star.style.left = xPos + 'px';
-            star.style.animationDuration = animationDuration + 'ms';
-            gameArea.appendChild(star);
-            stars.push(star);
+        // Game Variables
+        let score = 0;
+        let gameOver = false;
+        const playerWidth = 60;
+        const playerHeight = 60;
+        const playerSpeed = 7;
+        const laserWidth = 4;
+        const laserHeight = 20;
+        const laserSpeed = 10;
+        const enemyWidth = 50;
+        const enemyHeight = 50;
+        const enemySpeed = 3;
+        const enemySpawnInterval = 2000; // in ms
 
-            // Listen for animation end
-            star.addEventListener('animationend', () => {
-                if (gameArea.contains(star)) {
-                    endGame();
-                }
-            });
+        // Key Controls
+        const keys = {
+            ArrowLeft: false,
+            ArrowRight: false,
+            Space: false
+        };
 
-            // Collision detection
-            const fallInterval = setInterval(() => {
-                if (!gameArea.contains(star)) {
-                    clearInterval(fallInterval);
-                    return;
+        // Event Listeners for Key Presses
+        window.addEventListener('keydown', (e) => {
+            if (e.code in keys) {
+                keys[e.code] = true;
+                e.preventDefault();
+            }
+        });
+        window.addEventListener('keyup', (e) => {
+            if (e.code in keys) {
+                keys[e.code] = false;
+                e.preventDefault();
+            }
+        });
+
+        // Player Object
+        const player = {
+            x: canvas.width / 2 - playerWidth / 2,
+            y: canvas.height - playerHeight - 20,
+            width: playerWidth,
+            height: playerHeight,
+            color: '#00ff00',
+            draw: function() {
+                ctx.fillStyle = this.color;
+                // Draw spaceship as a triangle
+                ctx.beginPath();
+                ctx.moveTo(this.x + this.width / 2, this.y);
+                ctx.lineTo(this.x, this.y + this.height);
+                ctx.lineTo(this.x + this.width, this.y + this.height);
+                ctx.closePath();
+                ctx.fill();
+            },
+            move: function() {
+                if (keys['ArrowLeft'] && this.x > 0) {
+                    this.x -= playerSpeed;
                 }
-                const starRect = star.getBoundingClientRect();
-                const basketRect = basket.getBoundingClientRect();
-                if (starRect.bottom >= basketRect.top &&
-                    starRect.left >= basketRect.left &&
-                    starRect.right <= basketRect.right) {
-                    // Caught the star
-                    score++;
-                    scoreBoard.textContent = 'Score: ' + score;
-                    star.remove();
-                    clearInterval(fallInterval);
+                if (keys['ArrowRight'] && this.x + this.width < canvas.width) {
+                    this.x += playerSpeed;
                 }
-            }, 100);
+            }
+        };
+
+        // Laser Array
+        const lasers = [];
+
+        // Laser Object
+        class Laser {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.width = laserWidth;
+                this.height = laserHeight;
+                this.color = '#ff0000';
+            }
+
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+            }
+
+            update() {
+                this.y -= laserSpeed;
+                this.draw();
+            }
         }
 
-        // Start the game
-        function startGame() {
-            score = 0;
-            scoreBoard.textContent = 'Score: 0';
-            gameOverText.style.display = 'none';
-            restartBtn.style.display = 'none';
-            // Spawn stars every 1 second
-            spawnInterval = setInterval(createStar, 1000);
+        // Enemy Array
+        const enemies = [];
+
+        // Enemy Object
+        class Enemy {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.width = enemyWidth;
+                this.height = enemyHeight;
+                this.color = '#0000ff';
+            }
+
+            draw() {
+                ctx.fillStyle = this.color;
+                // Draw enemy as a rectangle with eyes
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+                // Eyes
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.arc(this.x + this.width * 0.25, this.y + this.height * 0.3, 5, 0, Math.PI * 2);
+                ctx.arc(this.x + this.width * 0.75, this.y + this.height * 0.3, 5, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            update() {
+                this.y += enemySpeed;
+                this.draw();
+            }
         }
 
-        // End the game
+        // Spawn Enemies at Intervals
+        function spawnEnemies() {
+            if (gameOver) return;
+            const x = Math.random() * (canvas.width - enemyWidth);
+            const y = -enemyHeight;
+            enemies.push(new Enemy(x, y));
+            setTimeout(spawnEnemies, enemySpawnInterval);
+        }
+
+        // Collision Detection
+        function isColliding(obj1, obj2) {
+            return (
+                obj1.x < obj2.x + obj2.width &&
+                obj1.x + obj1.width > obj2.x &&
+                obj1.y < obj2.y + obj2.height &&
+                obj1.y + obj1.height > obj2.y
+            );
+        }
+
+        // Game Over Function
         function endGame() {
-            clearInterval(spawnInterval);
-            stars.forEach(star => star.remove());
-            stars = [];
-            gameOverText.style.display = 'block';
+            gameOver = true;
+            gameOverScreen.style.display = 'block';
             restartBtn.style.display = 'block';
         }
 
-        // Restart the game
+        // Restart Game Function
         restartBtn.addEventListener('click', () => {
-            startGame();
+            // Reset Game Variables
+            score = 0;
+            gameOver = false;
+            enemies.length = 0;
+            lasers.length = 0;
+            scoreBoard.textContent = 'Score: 0';
+            gameOverScreen.style.display = 'none';
+            // Reset Player Position
+            player.x = canvas.width / 2 - playerWidth / 2;
+            // Start Spawning Enemies
+            spawnEnemies();
+            // Start Animation
+            requestAnimationFrame(gameLoop);
         });
 
-        // Initialize the game
-        window.onload = () => {
-            startGame();
-        };
+        // Main Game Loop
+        function gameLoop() {
+            if (gameOver) return;
+
+            // Clear Canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Move and Draw Player
+            player.move();
+            player.draw();
+
+            // Handle Lasers
+            for (let i = 0; i < lasers.length; i++) {
+                lasers[i].update();
+                // Remove lasers that go off-screen
+                if (lasers[i].y + lasers[i].height < 0) {
+                    lasers.splice(i, 1);
+                    i--;
+                }
+            }
+
+            // Handle Enemies
+            for (let i = 0; i < enemies.length; i++) {
+                enemies[i].update();
+                // Check if enemy reaches bottom
+                if (enemies[i].y + enemies[i].height > canvas.height) {
+                    endGame();
+                }
+                // Check collision with player
+                if (isColliding(enemies[i], player)) {
+                    endGame();
+                }
+                // Check collision with lasers
+                for (let j = 0; j < lasers.length; j++) {
+                    if (isColliding(enemies[i], lasers[j])) {
+                        // Remove enemy and laser
+                        enemies.splice(i, 1);
+                        lasers.splice(j, 1);
+                        // Increment score
+                        score += 10;
+                        scoreBoard.textContent = 'Score: ' + score;
+                        break;
+                    }
+                }
+            }
+
+            // Request Next Frame
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Handle Shooting
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && !gameOver) {
+                // Shoot a laser from the center top of the player
+                const laserX = player.x + player.width / 2 - laserWidth / 2;
+                const laserY = player.y;
+                lasers.push(new Laser(laserX, laserY));
+            }
+        });
+
+        // Start the Game
+        spawnEnemies();
+        requestAnimationFrame(gameLoop);
     </script>
 </body>
 </html>
